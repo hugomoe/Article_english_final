@@ -1,6 +1,6 @@
 \subsection{Algorithm for the geometric decomposition}
  
- In the algorithms the following convention is used : $H = \pmatrice{a&b&p\\c&d&q\\r&s&t}$ is the $3\times 3$ matrix characterizing the homography, so that $img$ is the input image and $img_f$ the output image, $img_f(x) = img(H(x))$. The decomposition $H \sim T_{c} R_{\psi}  \tilde H R_{\phi}$ is processed from left to right. We denote by $A \tilde H B$ the decomposition that will be returned by the algorithm $decomposition$. 
+ In the algorithms the following convention is used : $H = \pmatrice{a&b&p\\c&d&q\\r&s&t}$ is the $3\times 3$ matrix characterizing the homography, so that $img$ is the input image and $img_f$ the output image, $img_f(x) = img(H(x))$. The decomposition $H \sim T_{c} R_{\psi}  \tilde H R_{\phi}$ (obtained in formula \ref{formule_decomposition_effective}) is processed from left to right. We denote by $A \tilde H B$ the decomposition that will be returned by the algorithm $decomposition$. 
  
  %On rappelle que dans les algorithmes qui suivent, on prend la convention suivante : $H = \pmatrice{a&b&p\\c&d&q\\r&s&t}$ est la matrice carrée de taille 3 (ou l'application homographique) telle que si $img$ est l'image d'entrée et $img_f$ est l'image de sortie, $img_f(x) = img(H(x))$. Ainsi, la décomposition $H \sim T_{c} R_{\psi}  \tilde H R_{\phi}$ est exécutée de gauche à droite. On notera cette décomposition $A \tilde H B$, et ces trois matrices seront les objets renvoyés par $decomposition$.
  
