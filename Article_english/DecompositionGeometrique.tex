@@ -1,4 +1,4 @@
-The new method for homography resampling is based on the decomposition of a homography interpreted as a result on an image of a motion in space of the camera. The section below presents that decomposition.
+The new method for homography resampling is based on the decomposition of a homography interpreted as a result on an image of a motion in space of the camera. The section below presents that decomposition (theorem \ref{thepropdecomp} and corollary \ref{thecorollairedecomp}).
 
 
 %La nouvelle méthode de traitement des homographies repose sur la décomposition d'une homographie qui permet d'interpréter cette dernière en terme de mouvement de caméra. La partie ci-dessous présente cette décomposition.
@@ -319,10 +319,11 @@ h=\tau \circ R_\psi \circ \tilde{h} \circ R_\phi,
 \label{formule_decomposition_effective}
 \end{equation}
 yet this decomposition is not unique.
+\label{thecorollairedecomp}
 \end{corollaire}
 
 \begin{remarque}
-The formula \eqref{formule_decomposition_effective}  is the main ingredient of algorithm \ref{pseudoCodeDecompo}.
+The formula \eqref{formule_decomposition_effective} is the main ingredient of algorithm \ref{pseudoCodeDecompo}.
 \end{remarque}
 
 
