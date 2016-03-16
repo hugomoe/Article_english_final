@@ -52,9 +52,9 @@ The effects of the transforms $h$, $h_1$ and $h_2$ are shown in figure \ref{imag
 %\paragraph{Sous-échantillonnage gaussien}
 \paragraph{Gaussian downsampling}
 \label{zoom_gaussien}
-The gaussian zoom is a method of downsampling which uses the convolution $f*G_{d}$, where $G_d$ is a Gaussian kernel of standard deviation $d$. Approximations of the required standard deviation are briefly described in this section, and are based on \emph{SIFT is an invariant scale} \cite{morel2011sift}.
+The gaussian zoom is a method of downsampling which uses the convolution $f*G_{d}$, where $G_d$ is a Gaussian kernel of standard deviation $d$. Approximations of the required standard deviation are briefly described in this section, and are based on \emph{is SIFT scale invariant} \cite{morel2011sift}.
 
-%Le zoom gaussien est une méthode de sous-échantillonnage utilisant la convolution $f*G_{d}$ , où $G_d$ est un noyau gaussien d'écart type $d$. Dans nos algorithme on utilisera la méthode développée dans l'article \emph{SIFT is an invariant scale} \cite{morel2011sift}.
+%Le zoom gaussien est une méthode de sous-échantillonnage utilisant la convolution $f*G_{d}$ , où $G_d$ est un noyau gaussien d'écart type $d$. Dans nos algorithme on utilisera la méthode développée dans l'article \emph{is SIFT scale invariant} \cite{morel2011sift}.
 
 Let $f$ be an image, assume $f$ is of form $f=G_{c'} * f'$ where $f'$ is an infinite-resolution image. The parameter $c'$ is the Gaussian blur of the image $f$. Experiments show that the ideal blur is $c'=0.8$ \cite{morel2011sift}.\\
 Let $z$ be a real number such that $0<z\le 1$, consider $f''(x)=f'(zx)$.
