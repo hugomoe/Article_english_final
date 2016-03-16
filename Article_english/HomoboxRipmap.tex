@@ -57,19 +57,19 @@ The gaussian zoom is a method of downsampling which uses the convolution $f*G_{d
 %Le zoom gaussien est une méthode de sous-échantillonnage utilisant la convolution $f*G_{d}$ , où $G_d$ est un noyau gaussien d'écart type $d$. Dans nos algorithme on utilisera la méthode développée dans l'article \emph{is SIFT scale invariant} \cite{morel2011sift}.
 
 Let $f$ be an image, assume $f$ is of form $f=G_{c'} * f'$ where $f'$ is an infinite-resolution image. The parameter $c'$ is the Gaussian blur of the image $f$. Experiments show that the ideal blur is $c'=0.8$ \cite{morel2011sift}.\\
-Let $z$ be a real number such that $0<z\le 1$, consider $f''(x)=f'(zx)$.
-The Gaussian blur of the resampled function $x\mapsto f(zx)$ has to be $0.8$. Since
+Let $z \in [1,+\infty[$, consider $f'_z(x)=f'(zx)$ the downsampled infinite-resolution image.
+The Gaussian blur $c$ of the downsampled image $f_z : x \mapsto f(zx)$ has to be $0.8$. To achieve this goal, one may want to convolve $f$ with $G_\sigma$ (with an appropriate standard deviation $\sigma$) before downsample. Since
 
 \begin{equation*}
-(f''*G_{c})(x)=(f'*G_{cz})(zx)
+(f'_z*G_{c})(x)=(f'*G_{cz})(zx)
 \end{equation*}
 and 
 \begin{equation*}
-(f*G_d)(zx)=(f'*G_c'*G_d)(zx)=(f'*G_{\sqrt{c'^2 + d^2}})(zx),
+(f*G_\sigma)(zx)=(f'*G_c'*G_\sigma)(zx)=(f'*G_{\sqrt{c'^2 + \sigma^2}})(zx)
 \end{equation*}
 we conclude
 \begin{equation}
-d=\sqrt{c^2 z^2 - c'^2}.
+\sigma=\sqrt{c^2 z^2 - c'^2}.
 \label{formule_zoom_gaussien}
 \end{equation}
 The parameter $c'$ (the Gaussian blur of the input image) is difficult to compute or to predict. Experiments show that it is between $0.8$ and $0.4$ for reasonably sampled images. A Gaussian blur of $0.7$ in the input image is assumed in our implementation.
@@ -113,7 +113,7 @@ The function $x\mapsto \sqrt{n}~\Gcal_n^d(\sqrt{n}~x)$ converges uniformly on $\
 \caption{Comparison between $\Gcal_3^{20}$ and $G_{10}$ (centered on $50$)}
 \end{figure}
 
-From now on we denote $D_d$ the "discret differentiation" operator defined by $D_d f(x)=\frac{f(x+\frac{d}{2})-f(x-\frac{d}{2})}{d}$ and if $f$ is a compactly supported piecewise continuous function, we denote \begin{equation*}
+From now on we denote $D_d$ the ''discret differentiation'' operator defined by $D_d f(x)=\frac{f(x+\frac{d}{2})-f(x-\frac{d}{2})}{d}$ and if $f$ is a compactly supported piecewise continuous function, we denote \begin{equation*}
 F_{n+1}(x)= \int_{-\infty}^{x}F_{n}(y)dy~~~ \txt{ and }~~~F_{0}(x)= f(x).
 \end{equation*}
 
@@ -154,7 +154,7 @@ $D_d^n$ is the sum of translation operators
 \begin{equation*}
 f\mapsto f(\cdot+\frac{d}{2})~~~\txt{ and }~~~f\mapsto f(\cdot-\frac{d}{2})?
 \end{equation*}
-so it can be developed using the binomial theorem (since those two operators commute). Therefore
+so it can be developed using a binomial formula. Therefore
 
 %On peut développer $D_d^n$ à l'aide du binome de Newton car les deux opérateurs commutent. On obtient donc
 \begin{equation*}
@@ -167,31 +167,34 @@ so it can be developed using the binomial theorem (since those two operators com
 
 An approximation of $F_{k}$ is required in order to adapt proposition \ref{continuous_approx} to a discrete signal and use these formulas.\\
 \medbreak
-Let $(f_k)_{k=0...m-1}$ be a discrete signal, define $(F_n)$ by
+Let $(f_k)_{k=0...m-1}$ be a discrete signal, define $(F_n)$ the piecewise polynomial interpolation of degree $n$ by
 
 \begin{equation}
 F_{0} (x) =\underset{0\le k \le m-1}{\sum}f_{k} \mathds{1}_{[k,k+1[}(x) \txt{ and }  F_{n}(x)=\int_{-\infty}^{x}F_{n-1}(y)dx.
 \label{defintion_fn}
 \end{equation}
 
-\noindent Then $F_{n}$ can be computed for every $n\in\mb{N}$. As an example for $n=1$,
+\noindent Then $F_{n}$ can be computed for every $n\in\mb{N}$ : for $n=1$,
 
 \begin{equation*}
 F_{1}(x)=\underset{k\le \lfloor x\rfloor \wedge m-1}{\sum}f_{k}+ f_{\lfloor x\rfloor}
-(x-\lfloor x\rfloor).
+(x-\lfloor x\rfloor)
 \end{equation*}
 
-\noindent This function is a piecewise affine map. It can be shown by induction on $n$ that
+\noindent This function is a piecewise affine map. It can be shown by induction on $n\geq 1$ that
 
 \begin{eqnarray*}
-F_{n}(x) &=& F_{n}(\lfloor x\rfloor \wedge m)~~+\mathds{1}_{[0,m[}(x) \underset{0\le k \le n-1}{\sum}F_{k}(\lfloor x \rfloor) \frac{(x-\lfloor x \rfloor)^{n-k}}{(n-k)!}\\
-          &+&\mathds{1}_{[m,+\infty[}(x)\underset{1\le k \le n-1}{\sum}F_{k}(m) \frac{(x-m)^{n-1-k}}{(n-1-k)!},
+F_{n}(x)
+&=&
+F_n(\lfloor x\rfloor) + \displaystyle{\sum_{0 \leq k \leq n-1}}F_{k}(\lfloor x \rfloor) \frac{(x-\lfloor x \rfloor)^{n-k}}{(n-k)!} \text{ if } x<m\\
+&=&
+F_{n}(m) + \displaystyle{\sum_{1 \leq k \leq n-1}} F_{k}(m) \frac{(x-m)^{n-1-k}}{(n-1-k)!} \text{ if } x \geq m
 \end{eqnarray*}
 
-\noindent where values of $F_n$ on integers can be computed by induction using
+\noindent where values of $F_n(\lfloor x\rfloor)$ can be computed by induction using
 
 \begin{equation*}
-\forall k \in \llbracket 0 ; m-1 \rrbracket, F_{n}(k+1)=F_{n}(k)+\underset{0\le l < n}{\sum} \frac{F_{l}(k)}{(n-l)!}.
+\forall k \in \llbracket 0 ; m-1 \rrbracket, F_{n}(k+1)=F_{n}(k)+\underset{0\le l \leq n-1}{\sum} \frac{F_{l}(k)}{(n-l)!}
 \end{equation*}
 
 %Dans nos algorithmes, on utilisera généralement cette propriété pour $n=3$ mais on calculera l'opérateur $D_d^n$ en faisant des différences successives (algorithme \ref{pseudo_code_convol_4_int}).
@@ -209,7 +212,7 @@ F_{n}(x) &=& F_{n}(\lfloor x\rfloor \wedge m)~~+\mathds{1}_{[0,m[}(x) \underset{
 \medbreak
 With this method the signal $(f_k)$ could be resampled by interpolating it with $F_{0}$ in the first place, and then by convolving with a kernel $\Gcal_n^d$.
 
-\noindent But when this method is used, the image is initially interpolated with a piecewise constant function, and when $d$ is small, resampling using $F_{0}*\Gcal_n^d$ is equivalent to resampling using the value of the closest point. However this problem can be solved by convolving initially with $\Gcal_1^1$, and therefore considering a piecewise affine interpolation of the samples.
+\noindent But when this method is used, the image is initially interpolated with a piecewise constant function, and when $d$ is small, resampling using $F_{0}*\Gcal_n^d$ is equivalent to resampling using the value of the closest point. However this problem can be solved by convolving initially with $\Gcal_1^1$, and therefore considering a piecewise affine interpolation $\tilde F = F_0*\Gcal_1^1$ of the samples $(f_k)$.
 
 %Dans cette méthode on ré-échantillonne le signal $(f_k)$ en l'interpolant d'abord par la fonction $F_{0}$, puis on ré-échantillonne en appliquant une convolution avec un noyau $\Gcal_n^d$. On utilise dans nos algorithmes les fonctions $\Gcal_3^d$ car elles se sont de bonnes approximations de courbes gaussiennes.\\ %placer figure 
 %Dans cette méthode, l'image est initialement interpolée par une fonction constante par morceaux. Lorsque le paramètre $d$ est choisi très petit, le ré-échantillonnage $F_{0}*\Gcal_3^d$ est équivalent à la méthode du point le plus proche.\\
@@ -219,7 +222,7 @@ With this method the signal $(f_k)$ could be resampled by interpolating it with 
 %JUJUJU
 
 \begin{prop}
-Let $(f_k)$ be a family of samples and $(F_n)$ defined by \eqref{defintion_fn}. Then
+Let $(f_k)$ be a discrete signal, $(F_n)$ defined by \eqref{defintion_fn} and $\tilde F$ its piecewise affine interpolation. Then
 \begin{equation*}
 ( \tilde{F} * \Gcal_n^d ) (x) = D_d^{n}D_1 F_{n+1}(x).
 \end{equation*}
@@ -228,11 +231,11 @@ Let $(f_k)$ be a family of samples and $(F_n)$ defined by \eqref{defintion_fn}. 
 \begin{proof}
 We have
 \begin{equation*}
-\tilde{F}(x)=\displaystyle{\sum_{0\le k \le m-1}} f_k \Gcal_2^1 (x-k-\frac{1}{2})=(F_{0} *\Gcal_1^1 )(x),
+\tilde{F}(x)=(F_{0} * \Gcal_1^1 )(x),
 \end{equation*}
 so
 \begin{equation*}
-\tilde{F}*\Gcal_n^d=(F_{0}*\Gcal_1^1)*\Gcal_n^d=(F_{0}*\Gcal_n^d)*\Gcal_1^1=(D_d^n F_{n})*\Gcal_1^1= D_d^n D_1 F_{n+1}.
+\tilde{F}*\Gcal_n^d=F_{0}*\Gcal_1^1*\Gcal_n^d=F_{0}*\Gcal_n^d*\Gcal_1^1=(D_d^n F_{n})*\Gcal_1^1=D_d^n (F_{n}*\Gcal_1^1)= D_d^n (D_1 F_{n+1}).
 \end{equation*}
 \end{proof}
 
@@ -301,10 +304,10 @@ These formulas are used in the algorithm \ref{pseudo_code_eval_4_int}.
 
 
 To implement this method, the parameter $d$ has to be chosen with respect to the local zoom $z$ in the point considered. The zoom factor $z$ is given by the derivative of the transform.\\
-The results from the previous paragraph (cf. \ref{zoom_gaussien}) are used since $\Gcal_3^d$ is a good approximation of a Gaussian function. The standard derivation $\sigma$ of $\Gcal_3^d$ is given by the formula $\sigma=\frac{d}{2}$. By \eqref{formule_zoom_gaussien}, if $z\ge 1$, then
+The results from the previous paragraph (cf. \ref{zoom_gaussien}) are used since $\Gcal_3^d$ is a good approximation of a Gaussian function. According to Wells \cite{wells1986efficient}, the parameter $d$ so that $\Gcal_3^d$ approximates $G_\sigma$ should check $\sigma^2 = \frac 1 4 \left((d+1)^2-1\right)$. Thus, for $z \geq 1$, by \eqref{formule_zoom_gaussien}
 
 \begin{equation*}
-d=2\sqrt{c^2 z^2 - c'^2} \text{ with } c=0.8 \text{ and } c'=0.7.
+d=\sqrt{2(c^2 z^2 - c'^2)+1}-1 \text{ with } c=0.8 \text{ and } c'=0.7.
 \end{equation*}
 
 The value of $c'$ is fixed to $0.7$ in our implementation, but it could be chosen accordingly to the input image : for sharp image, it has to be around $0.5$ to avoid aliasing. A too small value introduces an excessive blur.
